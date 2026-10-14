@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cgbjv1ohgh4o8"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_gmpk6"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_v1wow"]
+
+[node name="TempMagnet" type="RigidBody3D" unique_id=239469699]
+collision_layer = 5
+
+[node name="Magnet" type="MeshInstance3D" parent="." unique_id=771132906]
+layers = 5
+mesh = SubResource("BoxMesh_gmpk6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1036891798]
+shape = SubResource("BoxShape3D_v1wow")

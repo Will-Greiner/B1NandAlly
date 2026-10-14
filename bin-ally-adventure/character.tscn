@@ -1,0 +1,83 @@
+[gd_scene format=3 uid="uid://bprelmek33hkc"]
+
+[ext_resource type="Script" uid="uid://bj6cby1ijp0i2" path="res://third_person_camera.gd" id="1_glpr6"]
+[ext_resource type="Script" uid="uid://ba4ibftp2h05" path="res://third_person_controller.gd" id="1_pjt0s"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mlf6e"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_gmpk6"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_pjt0s"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vu45j"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_pjt0s"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("VisualRoot:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=590416913 node_paths=PackedStringArray("hold_point", "projection_shape", "camera")]
+script = ExtResource("1_pjt0s")
+walk_speed = 4.0
+run_speed = 8.0
+dash_enabled = true
+dash_speed = 50.0
+dash_duration = 0.3
+dash_braking = 200.0
+allow_air_dash = true
+wall_run_support_duration = 0.6
+wall_run_maximum_duration = 6.0
+hold_point = NodePath("Marker3D")
+projection_shape = NodePath("CameraRig/Yaw/Pitch/SpringArm3D/Camera3D/ShapeCast3D")
+camera = NodePath("CameraRig/Yaw/Pitch/SpringArm3D/Camera3D")
+
+[node name="CameraRig" type="Node3D" parent="." unique_id=1806429203]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+script = ExtResource("1_glpr6")
+
+[node name="Yaw" type="Node3D" parent="CameraRig" unique_id=1284270479]
+
+[node name="Pitch" type="Node3D" parent="CameraRig/Yaw" unique_id=1196940934]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraRig/Yaw/Pitch" unique_id=2131802935]
+spring_length = 3.5
+margin = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig/Yaw/Pitch/SpringArm3D" unique_id=1346064317]
+
+[node name="ShapeCast3D" type="ShapeCast3D" parent="CameraRig/Yaw/Pitch/SpringArm3D/Camera3D" unique_id=1137184213]
+transform = Transform3D(1, 0, 0, 0, 0.8821683, -0.47093427, 0, 0.47093427, 0.8821683, 0, 0, -0.021886587)
+shape = SubResource("ConvexPolygonShape3D_mlf6e")
+target_position = Vector3(0, 0, 0)
+collision_mask = 4
+
+[node name="VisualRoot" type="Node3D" parent="." unique_id=1777972584]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="VisualRoot" unique_id=1682357382]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CapsuleMesh_gmpk6")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="VisualRoot" unique_id=300686284]
+transform = Transform3D(0.25475445, 0, 0, 0, -1.1135671e-08, 0.25475445, 0, -0.25475445, -1.1135671e-08, 0, 1.3394076, -0.30016795)
+mesh = SubResource("CapsuleMesh_pjt0s")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1765862601]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_vu45j")
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=1718064462]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32641828, 1.0150746, -0.6498053)
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1708005701]
+replication_interval = 1.0
+replication_config = SubResource("SceneReplicationConfig_pjt0s")

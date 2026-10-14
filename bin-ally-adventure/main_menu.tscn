@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://dfk4c4vw47kos"]
+
+[ext_resource type="Script" uid="uid://md4t8jkevmpo" path="res://main_menu.gd" id="1_06t4h"]
+[ext_resource type="PackedScene" uid="uid://mawr73g8wrpc" path="res://game_scene.tscn" id="2_7vrkn"]
+
+[node name="MainMenu" type="Control" unique_id=56831810 node_paths=PackedStringArray("main_panel", "invite_panel", "new_game_button", "singleplayer_button", "invite_button", "begin_button", "back_button", "quit_button", "player_list", "status_label")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_06t4h")
+game_scene = ExtResource("2_7vrkn")
+main_panel = NodePath("MainPanel")
+invite_panel = NodePath("InvitePanel")
+new_game_button = NodePath("MainPanel/VBoxContainer/NewGameButton")
+singleplayer_button = NodePath("MainPanel/VBoxContainer/SinglePlayerButton")
+invite_button = NodePath("InvitePanel/InviteButton")
+begin_button = NodePath("InvitePanel/BeginButton")
+back_button = NodePath("InvitePanel/BackButton")
+quit_button = NodePath("MainPanel/VBoxContainer/QuitButton")
+player_list = NodePath("InvitePanel/PlayerList")
+status_label = NodePath("StatusLabel")
+
+[node name="MainPanel" type="Control" parent="." unique_id=2033922905]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MainPanel" unique_id=2133302314]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -37.0
+offset_right = 160.0
+offset_bottom = 37.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="NewGameButton" type="Button" parent="MainPanel/VBoxContainer" unique_id=232287518]
+layout_mode = 2
+text = "New Game"
+
+[node name="SinglePlayerButton" type="Button" parent="MainPanel/VBoxContainer" unique_id=1803450123]
+layout_mode = 2
+text = "Singleplayer"
+
+[node name="QuitButton" type="Button" parent="MainPanel/VBoxContainer" unique_id=1556738556]
+layout_mode = 2
+text = "Quit"
+
+[node name="InvitePanel" type="Control" parent="." unique_id=1091811511]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InviteButton" type="Button" parent="InvitePanel" unique_id=2141148609]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+offset_left = 100.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 91.0
+text = "Invite"
+
+[node name="BackButton" type="Button" parent="InvitePanel" unique_id=544146328]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = -95.0
+offset_right = 130.0
+offset_bottom = -64.0
+grow_vertical = 0
+text = "Back"
+
+[node name="BeginButton" type="Button" parent="InvitePanel" unique_id=782674834]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -128.0
+offset_top = -97.0
+offset_right = -28.0
+offset_bottom = -66.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Begin"
+
+[node name="PlayerList" type="ItemList" parent="InvitePanel" unique_id=1677435694]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 300.0
+offset_bottom = 200.0
+
+[node name="StatusLabel" type="Label" parent="." unique_id=745438228]
+custom_minimum_size = Vector2(600, 0)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -629.0
+offset_top = -53.0
+offset_right = -29.0
+offset_bottom = -30.0
+grow_horizontal = 0
+grow_vertical = 0
+horizontal_alignment = 2
+vertical_alignment = 1
+autowrap_mode = 3
