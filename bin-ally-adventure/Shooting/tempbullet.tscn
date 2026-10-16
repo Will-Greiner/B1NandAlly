@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://03qx3qkiv5qo"]
+
+[ext_resource type="Script" uid="uid://hn63rc23mhc" path="res://Shooting/BulletTemp.gd" id="1_lto54"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_jv8hl"]
+
+[node name="Node3D" type="Node3D" unique_id=257411768]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=320018730]
+transform = Transform3D(0.51934755, 0, 0, 0, 0.51934755, 0, 0, 0, 0.51934755, 0, 0, 0)
+mesh = SubResource("SphereMesh_jv8hl")
+script = ExtResource("1_lto54")

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://mawr73g8wrpc"]
 
 [ext_resource type="PackedScene" uid="uid://bprelmek33hkc" path="res://character.tscn" id="1_mlf6e"]
+[ext_resource type="PackedScene" uid="uid://cc3b27ijiyoul" path="res://EnemyBasic.tscn" id="2_mixcd"]
 [ext_resource type="PackedScene" uid="uid://cgbjv1ohgh4o8" path="res://Magnet Stuff/temp_magnet.tscn" id="2_po0ka"]
 [ext_resource type="Script" uid="uid://bat7ebqg3cb7k" path="res://player_spawn_manager.gd" id="2_v1wow"]
 
@@ -51,9 +52,33 @@ albedo_color = Color(0.1872, 0.52, 0.45898664, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_05hpe"]
 size = Vector3(2, 0.001, 2)
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_audoj"]
+sky_top_color = Color(0, 0.4333334, 1, 1)
+sky_horizon_color = Color(0.82355297, 0.49058396, 0.965015, 1)
+sky_curve = 0.12613465
+ground_bottom_color = Color(0.91, 0.3003, 0.91, 1)
+ground_horizon_color = Color(1, 0.64705884, 1, 1)
+ground_energy_multiplier = 0.75
+
+[sub_resource type="Sky" id="Sky_rxnv0"]
+sky_material = SubResource("ProceduralSkyMaterial_audoj")
+
+[sub_resource type="Environment" id="Environment_jv8hl"]
+background_mode = 2
+sky = SubResource("Sky_rxnv0")
+
 [node name="GameScene" type="Node3D" unique_id=47897858]
 
+[node name="Node3D" parent="." unique_id=723825702 instance=ExtResource("2_mixcd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1733017, 1.0500002, -1.2811565)
+
 [node name="CharacterBody3D" parent="." unique_id=590416913 instance=ExtResource("1_mlf6e")]
+walk_speed = 8.0
+run_speed = 12.0
+turning_speed = 16.0
+
+[node name="Gun" parent="CharacterBody3D/VisualRoot" parent_id_path=PackedInt32Array(590416913, 1777972584) index="2" unique_id=382332266 node_paths=PackedStringArray("hitParent")]
+hitParent = NodePath("../../../TempHitHolder")
 
 [node name="TempMagnet" parent="." unique_id=239469699 instance=ExtResource("2_po0ka")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.123, 0.6350031, -4.522)
@@ -198,3 +223,10 @@ spawn_path = NodePath("../Players")
 
 [node name="Player2Spawn" type="Marker3D" parent="PlayerSpawnManager/SpawnPoints" unique_id=1619921492]
 transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -5.866578, 0, -30.071602)
+
+[node name="TempHitHolder" type="Node3D" parent="." unique_id=932897788]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=291085363]
+environment = SubResource("Environment_jv8hl")
+
+[editable path="CharacterBody3D"]

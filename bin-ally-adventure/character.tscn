@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://bj6cby1ijp0i2" path="res://third_person_camera.gd" id="1_glpr6"]
 [ext_resource type="Script" uid="uid://ba4ibftp2h05" path="res://third_person_controller.gd" id="1_pjt0s"]
+[ext_resource type="Script" uid="uid://f3yec8ww8py1" path="res://Shooting/shooting.gd" id="3_wa5vi"]
+[ext_resource type="Texture2D" uid="uid://bhjn85ffn8jdx" path="res://Shooting/crosshairTemp.png" id="3_wfnr8"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mlf6e"]
 
@@ -10,6 +12,11 @@ radius = 0.3
 height = 1.8
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_pjt0s"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rxnv0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_audoj"]
+albedo_color = Color(1.1256015, 1.2401172, 1.1504134, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vu45j"]
 radius = 0.3
@@ -61,6 +68,10 @@ shape = SubResource("ConvexPolygonShape3D_mlf6e")
 target_position = Vector3(0, 0, 0)
 collision_mask = 4
 
+[node name="Sprite3D" type="Sprite3D" parent="CameraRig/Yaw/Pitch/SpringArm3D/Camera3D" unique_id=893780472]
+transform = Transform3D(0.005, 0, 0, 0, 0.005, 0, 0, 0, 0.005, 0, 0, -0.40540302)
+texture = ExtResource("3_wfnr8")
+
 [node name="VisualRoot" type="Node3D" parent="." unique_id=1777972584]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="VisualRoot" unique_id=1682357382]
@@ -70,6 +81,15 @@ mesh = SubResource("CapsuleMesh_gmpk6")
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="VisualRoot" unique_id=300686284]
 transform = Transform3D(0.25475445, 0, 0, 0, -1.1135671e-08, 0.25475445, 0, -0.25475445, -1.1135671e-08, 0, 1.3394076, -0.30016795)
 mesh = SubResource("CapsuleMesh_pjt0s")
+
+[node name="Gun" type="MeshInstance3D" parent="VisualRoot" unique_id=382332266 node_paths=PackedStringArray("camera", "spring_arm", "crosshair")]
+transform = Transform3D(0.2668947, 0, 0, 0, -0.0016825752, 0.26688942, 0, -0.26688942, -0.0016825752, 0.30078334, 1.0033882, -0.3726722)
+mesh = SubResource("CapsuleMesh_rxnv0")
+surface_material_override/0 = SubResource("StandardMaterial3D_audoj")
+script = ExtResource("3_wa5vi")
+camera = NodePath("../../CameraRig/Yaw/Pitch/SpringArm3D/Camera3D")
+spring_arm = NodePath("../../CameraRig/Yaw/Pitch/SpringArm3D")
+crosshair = NodePath("../../CameraRig/Yaw/Pitch/SpringArm3D/Camera3D/Sprite3D")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1765862601]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
