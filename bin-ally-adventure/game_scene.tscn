@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://bat7ebqg3cb7k" path="res://player_spawn_manager.gd" id="2_v1wow"]
 [ext_resource type="PackedScene" uid="uid://cqvrkjunyww7o" path="res://Enemy/enemy_spawner.tscn" id="5_mj2jn"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_jv8hl"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_gmpk6"]
 size = Vector3(8.457031, 0.5, 1)
 
@@ -73,7 +75,14 @@ sky = SubResource("Sky_rxnv0")
 [node name="Node3D" parent="." unique_id=723825702 instance=ExtResource("2_mixcd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1733017, 1.0500002, -1.2811565)
 
-[node name="CharacterBody3D" parent="." unique_id=590416913 instance=ExtResource("1_mlf6e")]
+[node name="b1n" type="Node3D" parent="." unique_id=716440129]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3656611, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="b1n" unique_id=573708887]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5383301, 0)
+mesh = SubResource("BoxMesh_jv8hl")
+
+[node name="ally" parent="." unique_id=590416913 instance=ExtResource("1_mlf6e")]
 walk_speed = 8.0
 run_speed = 12.0
 turning_speed = 16.0
@@ -244,4 +253,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.8722696)
 [node name="Marker3D" type="Marker3D" parent="EnemySpawner" unique_id=679206890]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.2079716)
 
-[editable path="CharacterBody3D"]
+[editable path="ally"]

@@ -10,6 +10,8 @@ albedo_color = Color(1, 0.3, 0.3, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_0ydjo"]
 size = Vector3(1, 1.9999999, 1)
 
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rxnv0"]
+
 [node name="Node3D" type="Node3D" unique_id=723825702]
 script = ExtResource("1_tut2w")
 
@@ -23,3 +25,7 @@ collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" unique_id=1373319667]
 shape = SubResource("BoxShape3D_0ydjo")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=770240493]
+transform = Transform3D(0.14074966, 0, 0, 0, -0.0010553789, -0.1943563, 0, 0.26709154, -0.0007679749, 0.2884782, 0.042829275, -0.57581884)
+mesh = SubResource("CapsuleMesh_rxnv0")
