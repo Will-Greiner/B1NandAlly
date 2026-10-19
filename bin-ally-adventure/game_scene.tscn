@@ -1,9 +1,10 @@
 [gd_scene format=3 uid="uid://mawr73g8wrpc"]
 
 [ext_resource type="PackedScene" uid="uid://bprelmek33hkc" path="res://character.tscn" id="1_mlf6e"]
-[ext_resource type="PackedScene" uid="uid://cc3b27ijiyoul" path="res://EnemyBasic.tscn" id="2_mixcd"]
+[ext_resource type="PackedScene" uid="uid://cc3b27ijiyoul" path="res://Enemy/EnemyBasic.tscn" id="2_mixcd"]
 [ext_resource type="PackedScene" uid="uid://cgbjv1ohgh4o8" path="res://Magnet Stuff/temp_magnet.tscn" id="2_po0ka"]
 [ext_resource type="Script" uid="uid://bat7ebqg3cb7k" path="res://player_spawn_manager.gd" id="2_v1wow"]
+[ext_resource type="PackedScene" uid="uid://cqvrkjunyww7o" path="res://Enemy/enemy_spawner.tscn" id="5_mj2jn"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_gmpk6"]
 size = Vector3(8.457031, 0.5, 1)
@@ -76,9 +77,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.1733017, 1.0500002, -1.2811
 walk_speed = 8.0
 run_speed = 12.0
 turning_speed = 16.0
-
-[node name="Gun" parent="CharacterBody3D/VisualRoot" parent_id_path=PackedInt32Array(590416913, 1777972584) index="2" unique_id=382332266 node_paths=PackedStringArray("hitParent")]
-hitParent = NodePath("../../../TempHitHolder")
+magnet_grab_range = 50.0
 
 [node name="TempMagnet" parent="." unique_id=239469699 instance=ExtResource("2_po0ka")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.123, 0.6350031, -4.522)
@@ -228,5 +227,21 @@ transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -5.8
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=291085363]
 environment = SubResource("Environment_jv8hl")
+
+[node name="EnemySpawner" parent="." unique_id=375743559 node_paths=PackedStringArray("cover_markers") instance=ExtResource("5_mj2jn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.364, 1, 9.087)
+shield_enemy_count = 1
+basic_enemy_count = 1
+agile_enemy_count = 1
+cover_markers = [NodePath("Marker3D3"), NodePath("Marker3D2"), NodePath("Marker3D")]
+
+[node name="Marker3D3" type="Marker3D" parent="EnemySpawner" unique_id=719111754]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.803, 0, 3.014)
+
+[node name="Marker3D2" type="Marker3D" parent="EnemySpawner" unique_id=1974369884]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.8722696)
+
+[node name="Marker3D" type="Marker3D" parent="EnemySpawner" unique_id=679206890]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4.2079716)
 
 [editable path="CharacterBody3D"]
