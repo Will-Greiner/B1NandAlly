@@ -15,10 +15,16 @@ class_name ThirdPersonCamera
 @export var maximum_pitch_degrees: float = 65.0
 @export var starting_pitch_degrees: float = -12.0
 
+@export_group("Replicated View")
+@export var network_view_transform: Transform3D = Transform3D.IDENTITY
+@export var network_view_fov: float = 75.0
+
 
 var controls_enabled: bool = false
+var split_screen_enabled: bool = false
 var yaw_angle: float = 0.0
 var pitch_angle: float = 0.0
+var displayed_view_size: Vector2 = Vector2.ZERO
 
 
 @onready var yaw_pivot: Node3D = $Yaw
@@ -36,9 +42,18 @@ func _ready() -> void:
 	if character != null:
 		spring_arm.add_excluded_object(character.get_rid())
 		
+		
+	# Split screen aspect
+	camera.keep_aspect = Camera3D.KEEP_HEIGHT
+		
 	_apply_rotation()
 	
+	# Record camera data for network
+	network_view_transform = camera.global_transform
+	network_view_fov = camera.fov
 	
+	
+# Handy control toggle
 func set_controls_enabled(enabled: bool) -> void:
 	controls_enabled = enabled
 	camera.current = enabled
@@ -47,6 +62,42 @@ func set_controls_enabled(enabled: bool) -> void:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		
 		
+func set_split_screen_enabled(endabled: bool) -> void:
+	split_screen_enabled = endabled
+	camera.current = controls_enabled and not split_screen_enabled
+	
+	
+func set_displayed_View_size(view_size: Vector2) -> void:
+	displayed_view_size = view_size
+	
+
+# Allows controller to retreive aspect ratio for magnet functionality
+func get_displayed_aspect_ratio() -> float:
+	var view_size: Vector2 = displayed_view_size
+	
+	if view_size.x <= 0.0 or view_size.y <= 0.0:
+		view_size = get_viewport().get_visible_rect().size
+		
+	return view_size.x / maxf(view_size.y, 1.0)
+	
+	
+# get the view transform for the local player or the connected player
+func get_view_transform() -> Transform3D:
+	if controls_enabled:
+		return camera.global_transform
+		
+	return network_view_transform
+	
+
+# Get the fov for the local player or connected player
+func get_view_fov() -> float:
+	if controls_enabled:
+		return camera.fov
+		
+	return network_view_fov
+		
+		
+# Mouse input handling
 func _unhandled_input(event: InputEvent) -> void:
 	if not controls_enabled:
 		return
@@ -79,6 +130,10 @@ func _process(delta: float) -> void:
 	pitch_angle -= look_input.y * controller_sensitivity * vertical_sign * delta
 	
 	_apply_rotation()
+	
+	# Record data to pass to the network
+	network_view_transform = camera.global_transform
+	network_view_fov = camera.fov
 	
 	
 func get_movement_direction(input_vector: Vector2) -> Vector3:

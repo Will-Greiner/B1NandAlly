@@ -6,11 +6,14 @@ signal session_started
 signal session_ended
 signal session_changed
 signal game_started
+signal friends_updated
 
 
 const APP_ID: int = 480
 const STEAM_PORT: int = 0
 const MAX_PLAYERS: int = 2
+const GAME_IDENTIFIER: String = "b1n_and_ally"
+const NETWORK_VERSION: String = "1"
 
 
 var steam_ready: bool = false
@@ -27,6 +30,9 @@ var client_id: int = 0
 var pending_operation: String = ""
 var status_text: String = "Initializing Steam..."
 
+var verified_friend_lobbies: Dictionary = {}
+var pending_friend_lobbies: Dictionary = {}
+
 var peer: SteamMultiplayerPeer = null
 
 
@@ -35,6 +41,7 @@ func _ready() -> void:
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.join_requested.connect(_on_join_requested)
 	Steam.lobby_chat_update.connect(_on_lobby_chat_update)
+	Steam.lobby_data_update.connect(_on_friend_lobby_data_update)
 
 	multiplayer.connected_to_server.connect(_on_connected_to_server)
 	multiplayer.connection_failed.connect(_on_connection_failed)
@@ -71,7 +78,7 @@ func new_game() -> void:
 
 	_set_status("Creating game...")
 
-	Steam.createLobby(Steam.LOBBY_TYPE_PRIVATE, MAX_PLAYERS)
+	Steam.createLobby(Steam.LOBBY_TYPE_FRIENDS_ONLY, MAX_PLAYERS)
 	
 	
 func start_singleplayer() -> void:
@@ -117,6 +124,157 @@ func get_lobby_members() -> Array[Dictionary]:
 	return members
 	
 	
+# Read friends playing the same Steam application.
+# A matching lobby must also identify itself as this game and network version.
+func get_friends_in_game() -> Array[Dictionary]:
+	var friends: Array[Dictionary] = []
+
+	if not steam_ready:
+		return friends
+
+	var friend_count: int = Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)
+
+	for index in range(friend_count):
+		var friend_id: int = Steam.getFriendByIndex(index, Steam.FRIEND_FLAG_IMMEDIATE)
+		var game_info: Dictionary = Steam.getFriendGamePlayed(friend_id)
+
+		if game_info.is_empty() or int(game_info.get("id", 0)) != APP_ID:
+			continue
+
+		var friend_name: String = Steam.getFriendPersonaName(friend_id)
+		var friend_lobby_id: int = int(game_info.get("lobby", 0))
+
+		if friend_name.is_empty():
+			friend_name = str(friend_id)
+
+		var joinable: bool = false
+		var description: String = "Playing"
+
+		if friend_lobby_id != 0:
+			description = "Lobby unavailable"
+
+			if pending_friend_lobbies.has(friend_lobby_id):
+				description = "Checking lobby..."
+			elif bool(verified_friend_lobbies.get(friend_lobby_id, false)):
+				var matching_game: bool = Steam.getLobbyData(friend_lobby_id, "game") == GAME_IDENTIFIER
+				var matching_version: bool = Steam.getLobbyData(friend_lobby_id, "version") == NETWORK_VERSION
+				var lobby_state: String = Steam.getLobbyData(friend_lobby_id, "state")
+
+				if matching_game and matching_version:
+					joinable = lobby_state == "waiting"
+
+					if joinable:
+						description = "Join available"
+					elif lobby_state == "full":
+						description = "Lobby full"
+					elif lobby_state == "running":
+						description = "In game"
+				elif matching_game:
+					description = "Different game version"
+
+		friends.append({"steam_id": friend_id, "name": friend_name, "lobby_id": friend_lobby_id, "joinable": joinable, "description": description})
+
+	return friends
+
+
+# Ask Steam for current metadata before offering Join.
+func refresh_friend_lobbies() -> void:
+	if not steam_ready:
+		return
+
+	var requested_lobbies: Dictionary = {}
+
+	for friend in get_friends_in_game():
+		var friend_lobby_id: int = int(friend["lobby_id"])
+
+		if friend_lobby_id == 0 or friend_lobby_id == lobby_id or requested_lobbies.has(friend_lobby_id):
+			continue
+
+		requested_lobbies[friend_lobby_id] = true
+
+		if pending_friend_lobbies.has(friend_lobby_id):
+			continue
+
+		verified_friend_lobbies.erase(friend_lobby_id)
+		pending_friend_lobbies[friend_lobby_id] = true
+
+		if not Steam.requestLobbyData(friend_lobby_id):
+			pending_friend_lobbies.erase(friend_lobby_id)
+
+	friends_updated.emit()
+
+
+func _on_friend_lobby_data_update(success: int, updated_lobby_id: int, member_id: int) -> void:
+	if updated_lobby_id != member_id or not pending_friend_lobbies.has(updated_lobby_id):
+		return
+
+	pending_friend_lobbies.erase(updated_lobby_id)
+	verified_friend_lobbies[updated_lobby_id] = success == 1
+
+	friends_updated.emit()
+
+
+# Publish whether this lobby is waiting, full, or already playing.
+func _publish_lobby_state() -> void:
+	if not hosting or lobby_id == 0:
+		return
+
+	var lobby_state: String = "waiting"
+
+	if game_running:
+		lobby_state = "running"
+	elif Steam.getNumLobbyMembers(lobby_id) >= MAX_PLAYERS:
+		lobby_state = "full"
+
+	Steam.setLobbyData(lobby_id, "game", GAME_IDENTIFIER)
+	Steam.setLobbyData(lobby_id, "version", NETWORK_VERSION)
+	Steam.setLobbyData(lobby_id, "state", lobby_state)
+
+
+func join_friend_lobby(friend_lobby_id: int) -> void:
+	if not steam_ready or busy or game_running or peer != null or lobby_id != 0:
+		return
+
+	if not bool(verified_friend_lobbies.get(friend_lobby_id, false)):
+		_set_status("Refresh the friends list before joining.")
+		return
+
+	if Steam.getLobbyData(friend_lobby_id, "game") != GAME_IDENTIFIER or Steam.getLobbyData(friend_lobby_id, "version") != NETWORK_VERSION:
+		_set_status("This lobby belongs to another game or version.")
+		return
+
+	if Steam.getLobbyData(friend_lobby_id, "state") != "waiting":
+		_set_status("This lobby is no longer available.")
+		return
+
+	_join_lobby(friend_lobby_id)
+
+
+func invite_friend_to_lobby(friend_id: int) -> bool:
+	if not steam_ready or not hosting or busy or game_running or lobby_id == 0:
+		return false
+
+	if Steam.getNumLobbyMembers(lobby_id) >= MAX_PLAYERS:
+		_set_status("The lobby is already full.")
+		return false
+
+	if friend_id <= 0 or friend_id == steam_id:
+		return false
+
+	if not Steam.inviteUserToLobby(lobby_id, friend_id):
+		_set_status("Could not send the invitation.")
+		return false
+
+	var friend_name: String = Steam.getFriendPersonaName(friend_id)
+
+	if friend_name.is_empty():
+		friend_name = str(friend_id)
+
+	_set_status("Invited " + friend_name + ". Waiting for them to join.")
+
+	return true
+	
+	
 # Lobby membership and network connection must be ready
 func can_begin_game() -> bool:
 	if not hosting or busy or game_running or peer == null or lobby_id == 0:
@@ -133,9 +291,10 @@ func can_begin_game() -> bool:
 func begin_game() -> void:
 	if not can_begin_game():
 		return
-		
+
 	Steam.setLobbyJoinable(lobby_id, false)
-	
+	Steam.setLobbyData(lobby_id, "state", "running")
+
 	_start_game.rpc()
 	
 	
@@ -184,8 +343,10 @@ func _on_lobby_created(result: int, created_lobby_id: int) -> void:
 	hosting = true
 	busy = false
 	pending_operation = ""
+	
+	_publish_lobby_state()
 
-	_set_status("Game started. Invite a friend.")
+	_set_status("Lobby created. Invite a friend or wait for them to join.")
 
 	session_started.emit()
 
@@ -232,6 +393,13 @@ func _on_lobby_joined(joined_lobby_id: int, _permissions: int, _locked: bool, re
 		return
 
 	lobby_id = joined_lobby_id
+
+	if Steam.getLobbyData(lobby_id, "game") != GAME_IDENTIFIER or Steam.getLobbyData(lobby_id, "version") != NETWORK_VERSION:
+		_close_session()
+		_set_status("This lobby belongs to another game or version.")
+		session_ended.emit()
+		return
+
 	host_steam_id = Steam.getLobbyOwner(lobby_id)
 
 	if host_steam_id == steam_id:
@@ -302,6 +470,8 @@ func _on_lobby_chat_update(updated_lobby_id: int, _changed_id: int, _changer_id:
 	if not hosting and Steam.getLobbyOwner(lobby_id) != host_steam_id:
 		_close_session()
 		_set_status("The host left the lobby.")
+		
+		_publish_lobby_state()
 
 		session_ended.emit()
 		return
@@ -388,3 +558,5 @@ func _set_status(message: String) -> void:
 
 	status_changed.emit(message)
 	session_changed.emit()
+	
+	

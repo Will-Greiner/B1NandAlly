@@ -130,9 +130,6 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if not _is_local_player():
 		return
-	
-	if not _is_local_player():
-		return
 
 	dash_cooldown_remaining = maxf(dash_cooldown_remaining - delta, 0.0)
 	traversal_retry_remaining = maxf(traversal_retry_remaining - delta, 0.0)
@@ -785,7 +782,7 @@ func _magnet_detect() -> void:
 		push_error("projection_shape must have a ConvexPolygonShape3D assigned!")
 		return
 	var fov_rad: float = deg_to_rad(camera.fov)
-	var aspect_ratio: float = get_viewport().get_visible_rect().size.x / get_viewport().get_visible_rect().size.y
+	var aspect_ratio: float = camera_rig.get_displayed_aspect_ratio()
 	
 	var half_height: float = magnet_grab_range * tan(fov_rad * 0.5)
 	var half_width: float = half_height * aspect_ratio

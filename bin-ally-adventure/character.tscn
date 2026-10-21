@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bj6cby1ijp0i2" path="res://third_person_camera.gd" id="1_glpr6"]
 [ext_resource type="Script" uid="uid://ba4ibftp2h05" path="res://third_person_controller.gd" id="1_pjt0s"]
-[ext_resource type="Script" uid="uid://f3yec8ww8py1" path="res://Shooting/shooting.gd" id="3_wa5vi"]
+[ext_resource type="Script" uid="uid://f3yec8ww8py1" path="res://Shooting/shooting_original.gd" id="3_wa5vi"]
 [ext_resource type="Texture2D" uid="uid://bhjn85ffn8jdx" path="res://Shooting/crosshairTemp.png" id="3_wfnr8"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mlf6e"]

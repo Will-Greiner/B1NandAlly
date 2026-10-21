@@ -1,4 +1,6 @@
 extends MeshInstance3D
+
+
 @export var aiming := false #determines if character is aiming
 @export var hit_parent : Node3D #gets whatever the player shoots
 @export var camera: Camera3D

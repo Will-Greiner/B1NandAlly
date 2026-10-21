@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://md4t8jkevmpo" path="res://main_menu.gd" id="1_06t4h"]
 [ext_resource type="PackedScene" uid="uid://mawr73g8wrpc" path="res://game_scene.tscn" id="2_7vrkn"]
 
-[node name="MainMenu" type="Control" unique_id=56831810 node_paths=PackedStringArray("main_panel", "invite_panel", "new_game_button", "singleplayer_button", "invite_button", "begin_button", "back_button", "quit_button", "player_list", "status_label")]
+[node name="MainMenu" type="Control" unique_id=56831810 node_paths=PackedStringArray("main_panel", "online_panel", "lobby_panel", "play_online_button", "singleplayer_button", "quit_button", "online_friends_list", "online_empty_label", "refresh_online_button", "host_button", "join_button", "online_back_button", "player_list", "lobby_help_label", "begin_button", "lobby_back_button", "friend_invite_controls", "invite_friends_list", "invite_empty_label", "refresh_invite_button", "invite_button", "status_label")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,18 +13,29 @@ grow_vertical = 2
 script = ExtResource("1_06t4h")
 game_scene = ExtResource("2_7vrkn")
 main_panel = NodePath("MainPanel")
-invite_panel = NodePath("InvitePanel")
-new_game_button = NodePath("MainPanel/VBoxContainer/NewGameButton")
+online_panel = NodePath("OnlinePanel")
+lobby_panel = NodePath("LobbyPanel")
+play_online_button = NodePath("MainPanel/VBoxContainer/OnlineButton")
 singleplayer_button = NodePath("MainPanel/VBoxContainer/SinglePlayerButton")
-invite_button = NodePath("InvitePanel/InviteButton")
-begin_button = NodePath("InvitePanel/BeginButton")
-back_button = NodePath("InvitePanel/BackButton")
 quit_button = NodePath("MainPanel/VBoxContainer/QuitButton")
-player_list = NodePath("InvitePanel/PlayerList")
+online_friends_list = NodePath("OnlinePanel/VBoxContainer/OnlineFriendsList")
+online_empty_label = NodePath("OnlinePanel/VBoxContainer/OnlineEmptyLabel")
+refresh_online_button = NodePath("OnlinePanel/VBoxContainer/RefreshFriendsButton")
+host_button = NodePath("OnlinePanel/VBoxContainer/HostButton")
+join_button = NodePath("OnlinePanel/VBoxContainer/JoinButton")
+online_back_button = NodePath("OnlinePanel/BackButton")
+player_list = NodePath("LobbyPanel/FriendInviteControls/PlayerList")
+lobby_help_label = NodePath("LobbyPanel/LobbyHelpLabel")
+begin_button = NodePath("LobbyPanel/BeginButton")
+lobby_back_button = NodePath("LobbyPanel/BackButton")
+friend_invite_controls = NodePath("LobbyPanel/FriendInviteControls")
+invite_friends_list = NodePath("LobbyPanel/FriendInviteControls/PlayerList")
+invite_empty_label = NodePath("LobbyPanel/FriendInviteControls/InviteEmptyLabel")
+refresh_invite_button = NodePath("LobbyPanel/FriendInviteControls/RefreshInviteButton")
+invite_button = NodePath("LobbyPanel/FriendInviteControls/InviteButton")
 status_label = NodePath("StatusLabel")
 
 [node name="MainPanel" type="Control" parent="." unique_id=2033922905]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,9 +59,9 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 12
 
-[node name="NewGameButton" type="Button" parent="MainPanel/VBoxContainer" unique_id=232287518]
+[node name="OnlineButton" type="Button" parent="MainPanel/VBoxContainer" unique_id=232287518]
 layout_mode = 2
-text = "New Game"
+text = "Online"
 
 [node name="SinglePlayerButton" type="Button" parent="MainPanel/VBoxContainer" unique_id=1803450123]
 layout_mode = 2
@@ -60,7 +71,8 @@ text = "Singleplayer"
 layout_mode = 2
 text = "Quit"
 
-[node name="InvitePanel" type="Control" parent="." unique_id=1091811511]
+[node name="LobbyPanel" type="Control" parent="." unique_id=1091811511]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -68,16 +80,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="InviteButton" type="Button" parent="InvitePanel" unique_id=2141148609]
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 1
-offset_left = 100.0
-offset_top = 60.0
-offset_right = 200.0
-offset_bottom = 91.0
-text = "Invite"
-
-[node name="BackButton" type="Button" parent="InvitePanel" unique_id=544146328]
+[node name="BackButton" type="Button" parent="LobbyPanel" unique_id=544146328]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 1
 anchors_preset = 2
@@ -90,7 +93,7 @@ offset_bottom = -64.0
 grow_vertical = 0
 text = "Back"
 
-[node name="BeginButton" type="Button" parent="InvitePanel" unique_id=782674834]
+[node name="BeginButton" type="Button" parent="LobbyPanel" unique_id=782674834]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 1
 anchors_preset = 3
@@ -106,13 +109,103 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "Begin"
 
-[node name="PlayerList" type="ItemList" parent="InvitePanel" unique_id=1677435694]
-custom_minimum_size = Vector2(200, 100)
+[node name="LobbyHelpLabel" type="Label" parent="LobbyPanel" unique_id=2093856885]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -96.0
+offset_right = 20.0
+offset_bottom = -73.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="FriendInviteControls" type="VBoxContainer" parent="LobbyPanel" unique_id=938861990]
 layout_mode = 0
 offset_left = 100.0
 offset_top = 100.0
-offset_right = 300.0
-offset_bottom = 200.0
+offset_right = 420.0
+offset_bottom = 314.0
+
+[node name="FriendsHeading" type="Label" parent="LobbyPanel/FriendInviteControls" unique_id=2000370864]
+layout_mode = 2
+text = "Friends in Game"
+
+[node name="PlayerList" type="ItemList" parent="LobbyPanel/FriendInviteControls" unique_id=573160171]
+custom_minimum_size = Vector2(320, 90)
+layout_mode = 2
+
+[node name="InviteEmptyLabel" type="Label" parent="LobbyPanel/FriendInviteControls" unique_id=592705851]
+layout_mode = 2
+text = "No friends are in game."
+
+[node name="RefreshInviteButton" type="Button" parent="LobbyPanel/FriendInviteControls" unique_id=247949046]
+layout_mode = 2
+text = "Refresh"
+
+[node name="InviteButton" type="Button" parent="LobbyPanel/FriendInviteControls" unique_id=2141148609]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Invite"
+
+[node name="OnlinePanel" type="Control" parent="." unique_id=2028445632]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackButton" type="Button" parent="OnlinePanel" unique_id=1341838782]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 30.0
+offset_top = -95.0
+offset_right = 130.0
+offset_bottom = -64.0
+grow_vertical = 0
+text = "Back"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="OnlinePanel" unique_id=1567384198]
+layout_mode = 0
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 420.0
+offset_bottom = 314.0
+
+[node name="HostButton" type="Button" parent="OnlinePanel/VBoxContainer" unique_id=441331041]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Host"
+
+[node name="FriendsHeading" type="Label" parent="OnlinePanel/VBoxContainer" unique_id=343373443]
+layout_mode = 2
+text = "Friends"
+
+[node name="OnlineFriendsList" type="ItemList" parent="OnlinePanel/VBoxContainer" unique_id=875503348]
+custom_minimum_size = Vector2(320, 180)
+layout_mode = 2
+
+[node name="OnlineEmptyLabel" type="Label" parent="OnlinePanel/VBoxContainer" unique_id=356528480]
+layout_mode = 2
+text = "No friends are in game."
+
+[node name="RefreshFriendsButton" type="Button" parent="OnlinePanel/VBoxContainer" unique_id=1889531790]
+layout_mode = 2
+text = "Refresh"
+
+[node name="JoinButton" type="Button" parent="OnlinePanel/VBoxContainer" unique_id=680669446]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+text = "Join
+"
 
 [node name="StatusLabel" type="Label" parent="." unique_id=745438228]
 custom_minimum_size = Vector2(600, 0)

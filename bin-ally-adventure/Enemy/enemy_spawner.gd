@@ -1,4 +1,5 @@
 extends Node3D
+
 @export_group("Spawn Information")
 @export var shield_enemy_count: int
 @export var basic_enemy_count: int
@@ -6,13 +7,13 @@ extends Node3D
 @export var cover_markers: Array[Marker3D]
 @export var cover_marker_claimed: Array[bool]
 
+@export_group("Enemy Scenes")
+@export var basic_enemy: PackedScene
+
 # Temp information to help with spawning
 var new_enemy
 var total_count: int
 var next_cover_marker: int = 0
-
-@export_group("Enemy Scenes")
-const basic_enemy = preload("res://Enemy/EnemyBasic.tscn")
 
 func _ready() -> void:
 	#sets up info to spawn the enemies
